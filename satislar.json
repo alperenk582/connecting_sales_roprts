@@ -1,7 +1,0 @@
-[
-  {"satis_id": 101, "urun_id": 1, "adet": 2, "tarih": "2025-09-01"},
-  {"satis_id": 102, "urun_id": 2, "adet": 1, "tarih": "2025-09-02"},
-  {"satis_id": 103, "urun_id": 3, "adet": 3, "tarih": "2025-09-03"},
-  {"satis_id": 104, "urun_id": 4, "adet": 1, "tarih": "2025-09-04"},
-  {"satis_id": 105, "urun_id": 5, "adet": 2, "tarih": "2025-09-05"}
-]
