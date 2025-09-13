@@ -1,0 +1,7 @@
+[
+  {"urun_id": 1, "marka": "BMW", "model": "X5", "fiyat": 120000},
+  {"urun_id": 2, "marka": "Audi", "model": "A4", "fiyat": 95000},
+  {"urun_id": 3, "marka": "Toyota", "model": "Corolla", "fiyat": 65000},
+  {"urun_id": 4, "marka": "Mercedes", "model": "C200", "fiyat": 110000},
+  {"urun_id": 5, "marka": "Volvo", "model": "XC90", "fiyat": 130000}
+]

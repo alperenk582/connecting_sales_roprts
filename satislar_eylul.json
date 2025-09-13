@@ -1,0 +1,5 @@
+[
+  {"satis_id": 201, "urun_id": 1, "adet": 2, "tarih": "2025-09-01"},
+  {"satis_id": 202, "urun_id": 2, "adet": 1, "tarih": "2025-09-05"},
+  {"satis_id": 203, "urun_id": 3, "adet": 3, "tarih": "2025-09-10"}
+]

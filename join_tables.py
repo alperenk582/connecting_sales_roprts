@@ -6,23 +6,33 @@ class JoinTables():
         self.connected_file=None
 
     def readCSV(self,how):
-        self.file1=input("Enter  first CSV file path: ")
-        df1=pd.read_csv(self.file1)
-        self.file2=input("Enter second file path: ")
-        df2=pd.read_csv(self.file2)
+        try:
+            self.file1=input("Enter  first CSV file path: ")
+            df1=pd.read_csv(self.file1)
+            self.file2=input("Enter second file path: ")
+            df2=pd.read_csv(self.file2)
+        except Exception:
+            print("File is not found")
+            return
+
         if how=="merge":
             merge_type=input("Enter the merge type (inner, outer, left, right): ").strip().lower()
-            self.connected_file=pd.merge(df1,df2,how=merge_type,on="urun_id")
+            self.connected_file=pd.merge(df1,df2,how=merge_type)
 
         elif how=="concat":
             self.connected_file=pd.concat([df1,df2],ignore_index=True)
         print(self.connected_file)
 
     def readExcel(self,how):
-        self.file1=input("Enter  first Excel file path: ")
-        df1=pd.read_excel(self.file1)
-        self.file2=input("Enter second file path: ")
-        df2=pd.read_excel(self.file2)
+        try:
+            self.file1=input("Enter  first Excel file path: ")
+            df1=pd.read_excel(self.file1)
+            self.file2=input("Enter second file path: ")
+            df2=pd.read_excel(self.file2)
+        except FileNotFoundError:
+            print("file is not found")
+            return
+
         if how=="merge":
             merge_type=input("Enter the merge type (inner, outer, left, right): ").strip().lower()
             self.connected_file=pd.merge(df1,df2,how=merge_type,on="urun id")
@@ -31,10 +41,15 @@ class JoinTables():
         print(self.connected_file)
 
     def readJSON(self,how):
-        self.file1=input("Enter  first Excel file path: ")
-        df1=pd.read_json(self.file1)
-        self.file2=input("Enter second file path: ")
-        df2=pd.read_json(self.file2)
+        try:
+            self.file1=input("Enter  first Excel file path: ")
+            df1=pd.read_json(self.file1)
+            self.file2=input("Enter second file path: ")
+            df2=pd.read_json(self.file2)
+        except FileNotFoundError:
+            print("file is not found")
+            return
+        
         if how=="merge":
             merge_type=input("Enter the merge type (inner, outer, left, right): ").strip().lower()
             self.connected_file=pd.merge(df1,df2,how=merge_type,on="urun_id")
@@ -49,15 +64,19 @@ class JoinTables():
         operateor=how.split(" ")[1]
         if operateor=="+":
             self.connected_file[name]=self.connected_file[column1]+self.connected_file[column2]
+            print(self.connected_file)
         elif operateor=="-":
             self.connected_file[name]=self.connected_file[column1]-self.connected_file[column2]
+            print(self.connected_file)
         elif operateor=="/":
             self.connected_file[name]=self.connected_file[column1]/self.connected_file[column2]
+            print(self.connected_file)
         elif operateor=="*":
             self.connected_file[name]=self.connected_file[column1]*self.connected_file[column2]
+            print(self.connected_file)
+        else:
+            raise Exception("operator must be '*','+','-' or '/'")
         
-        print(self.connected_file)
-
     def parseValue(self,val,col_name=None):
         v=val.strip()
         if v=="":
@@ -78,7 +97,6 @@ class JoinTables():
 
     def addNewRow(self):
         new_row_data=input("Enter the new row data separated by commas: ").strip().split(" ")
-        print(new_row_data)
         if "tarih" in self.connected_file.columns:
             s=self.connected_file["tarih"].astype(str).str.strip().replace({"":pd.NA})
             dt=pd.to_datetime(s,errors="coerce",infer_datetime_format=True)
@@ -103,43 +121,85 @@ class JoinTables():
     def saveToFile(self,name):
         self.connected_file.to_excel((f"{name}.xlsx"),index=False)
 
+    def fillNa(self,how):
+        if how=="delete":
+            self.connected_file.dropna(inplace=True)
+        else:
+            self.connected_file.fillna(how,inplace=True)
+        print(self.connected_file)
+
     def homeScreen(self):
         while True:
-            process=input("What do you want to do? (add new column \nadd new row \nsort \nsave to excel file \nto exit: q): ").strip().lower()
-            if process=="add new column":
-                how_many=int(input("How many new columns do you want to add? "))
-                for _ in range(how_many):
-                    name=input("Enter the new column name: ")
-                    how=input("Enter how to create the new column (column_name + caolumn_name): ")
-                    table.addNewColumn(name=name,how=how)
-            elif process=="add new row":
-                how_many=int(input("How many new rows do you want to add? "))
-                for _ in range(how_many):
-                    table.addNewRow()
-            elif process=="sort":
-                column_name=input("Enter the column name to sort by: ")
-                ascending=input("Sort ascending? (yes/no): ").strip().lower()=="yes"
-                table.sort(column_name=column_name,ascending=ascending)
-            elif process=="q":
-                break
+            if self.connected_file is None:
+                return
+            else:
+                process=input("What do you want to do? \n1- add new column \n2- add new row \n3- sort \n4- save to excel file\n5- fill empty values\nq to exit").strip().lower()
+                if process=="1":
+                    how_many=int(input("How many new columns do you want to add? "))
+                    for _ in range(how_many):
+                        name=input("Enter the new column name: ")
+                        how=input("Enter how to create the new column (column_name + caolumn_name): ")
+                        try:
+                            self.addNewColumn(name=name,how=how)
+                        except Exception as ex:
+                            print(ex)
+
+                elif process=="2":
+                    how_many=int(input("How many new rows do you want to add? "))
+                    for _ in range(how_many):
+                        self.addNewRow()
+
+                elif process=="3":
+                    column_name=input("Enter the column name to sort by: ")
+                    ascending=input("Sort ascending? (yes/no): ").strip().lower()=="yes"
+                    self.sort(column_name=column_name,ascending=ascending)
+
+                elif process=="4":
+                    name=input("Enter connected file name without extention")
+                    self.saveToFile(name)
+
+                elif process=="5":
+                    how=input("Enter what do you want to put for empty values ? ")
+                    self.fillNa(how)
+
+                elif process=="q":
+                    break
+
+                else:
+                    raise Exception("invalid option")
 
 table=JoinTables()
-file_type=input("Enter the file type (csv / excel / json / to exit: q): ").strip().lower()
 while True:
+    file_type=input("Enter the file type (csv / excel / json / to exit: q): ").strip().lower()
     if file_type=="csv":
         how=input("Enter how to join the tables (merge, concat): ").strip().lower()
         table.readCSV(how=how)
-        table.homeScreen()
+        if table.connected_file is None:
+            continue
+        try:
+            table.homeScreen()
+        except Exception as ex:
+            print(ex)
 
     elif file_type=="excel":
         how=input("Enter how to join tables (merge/concat): ").strip().lower()
         table.readExcel(how=how)
-        table.homeScreen()
+        try:
+            table.homeScreen()
+        except Exception as ex:
+            print(ex)
 
     elif file_type=="json":
         how=input("Enter how to join tables (merge/concat)")
         table.readJSON(how=how)
-        table.homeScreen()
+        try:
+            table.homeScreen()
+        except Exception as ex:
+            print(ex)
 
     elif file_type=="q":
         break
+
+    else:
+        print("invalid option")
+        continue
